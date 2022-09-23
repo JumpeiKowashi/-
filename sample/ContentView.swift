@@ -8,14 +8,31 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @State private var showingSheet = false
+    @ObservedObject var viewmodel = URLViewModel()
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+        NavigationView {
+            List {
+                ForEach(viewmodel.sites, id: \.self) { site in
+                    HStack {
+                        Text(site.sitename)
+                        Spacer()
+                    }
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        UIApplication.shared.open(URL(string: site.url)!)
+                    }
+                }
+            }.navigationTitle(Text("行きたいところリスト"))
+                .navigationBarItems(trailing: Button(action: {
+                    showingSheet.toggle()
+                }, label: {
+                    Image(systemName: "plus.circle")
+                }))
+                .sheet(isPresented: $showingSheet) {AddVIew(viewmodel: viewmodel)}
         }
-        .padding()
     }
 }
 
